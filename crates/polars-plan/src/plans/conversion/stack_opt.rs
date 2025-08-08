@@ -114,8 +114,8 @@ impl ConversionOptimizer {
         #[cfg(feature = "python")]
         {
             use crate::dsl::python_dsl::PythonScanSource;
-            ctx.in_pyarrow_scan = matches!(plan, IR::PythonScan { options } if options.python_source == PythonScanSource::Pyarrow);
-            ctx.in_io_plugin = matches!(plan, IR::PythonScan { options } if options.python_source == PythonScanSource::IOPlugin);
+            ctx.in_pyarrow_scan = matches!(plan, IR::PythonScan { options, .. } if options.python_source == PythonScanSource::Pyarrow);
+            ctx.in_io_plugin = matches!(plan, IR::PythonScan { options, .. } if options.python_source == PythonScanSource::IOPlugin);
         };
 
         self.schemas.clear();

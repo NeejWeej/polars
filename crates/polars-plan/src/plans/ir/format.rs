@@ -655,7 +655,7 @@ pub fn write_ir_non_recursive(
 ) -> fmt::Result {
     match ir {
         #[cfg(feature = "python")]
-        IR::PythonScan { options } => {
+        IR::PythonScan { options, .. } => {
             let total_columns = options.schema.len();
             let n_columns = options
                 .with_columns
@@ -669,9 +669,14 @@ pub fn write_ir_non_recursive(
                 PythonPredicate::None => None,
             };
 
+            let name = options
+                .custom_explain_name
+                .as_ref()
+                .map(|s| s.as_str())
+                .unwrap_or("PYTHON");
             write_scan(
                 f,
-                "PYTHON",
+                name,
                 &ScanSources::default(),
                 indent,
                 n_columns,
