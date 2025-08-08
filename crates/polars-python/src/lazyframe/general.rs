@@ -439,6 +439,8 @@ impl PyLazyFrame {
         scan_fn: PyObject,
         pyarrow: bool,
         validate_schema: bool,
+        inner_lfs: Option<Vec<PyLazyFrame>>,
+        custom_explain_name: Option<String>,
     ) -> PyResult<Self> {
         let schema = Arc::new(pyarrow_schema_to_rust(schema)?);
 
@@ -447,6 +449,8 @@ impl PyLazyFrame {
             scan_fn,
             pyarrow,
             validate_schema,
+            inner_lfs.map(|v| v.into_iter().map(|lf| lf.ldf).collect()),
+            custom_explain_name,
         )
         .into())
     }
@@ -457,6 +461,8 @@ impl PyLazyFrame {
         scan_fn: PyObject,
         pyarrow: bool,
         validate_schema: bool,
+        inner_lfs: Option<Vec<PyLazyFrame>>,
+        custom_explain_name: Option<String>,
     ) -> PyResult<Self> {
         let schema = Arc::new(Schema::from_iter(
             schema
@@ -468,6 +474,8 @@ impl PyLazyFrame {
             scan_fn,
             pyarrow,
             validate_schema,
+            inner_lfs.map(|v| v.into_iter().map(|lf| lf.ldf).collect()),
+            custom_explain_name,
         )
         .into())
     }
@@ -477,12 +485,16 @@ impl PyLazyFrame {
         schema_fn: PyObject,
         scan_fn: PyObject,
         validate_schema: bool,
+        inner_lfs: Option<Vec<PyLazyFrame>>,
+        custom_explain_name: Option<String>,
     ) -> PyResult<Self> {
         Ok(LazyFrame::scan_from_python_function(
             Either::Left(schema_fn),
             scan_fn,
             false,
             validate_schema,
+            inner_lfs.map(|v| v.into_iter().map(|lf| lf.ldf).collect()),
+            custom_explain_name,
         )
         .into())
     }

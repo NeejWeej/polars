@@ -411,7 +411,7 @@ impl ProjectionPushDown {
                 Ok(lp)
             },
             #[cfg(feature = "python")]
-            PythonScan { mut options } => {
+            PythonScan { mut options, sub_plans } => {
                 if self.is_count_star {
                     ctx.process_count_star_at_scan(&options.schema, expr_arena);
                 }
@@ -436,7 +436,7 @@ impl ProjectionPushDown {
                         true,
                     )?))
                 };
-                Ok(PythonScan { options })
+                Ok(PythonScan { options, sub_plans })
             },
             Scan {
                 sources,

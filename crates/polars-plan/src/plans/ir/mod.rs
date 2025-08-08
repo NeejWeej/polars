@@ -42,6 +42,7 @@ pub enum IR {
     #[cfg(feature = "python")]
     PythonScan {
         options: PythonOptions,
+    sub_plans: Vec<Node>,
     },
     Slice {
         input: Node,

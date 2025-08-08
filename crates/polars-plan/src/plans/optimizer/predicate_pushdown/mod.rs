@@ -637,7 +637,7 @@ impl PredicatePushDown<'_> {
                 }
             },
             #[cfg(feature = "python")]
-            PythonScan { mut options } => {
+            PythonScan { mut options, sub_plans } => {
                 let predicate = predicate_at_scan(acc_predicates, None, expr_arena);
                 if let Some(predicate) = predicate {
                     match ExprPushdownGroup::Pushable.update_with_expr_rec(
@@ -652,7 +652,7 @@ impl PredicatePushDown<'_> {
                             }
 
                             return Ok(self.optional_apply_predicate(
-                                PythonScan { options },
+                                PythonScan { options, sub_plans },
                                 vec![predicate],
                                 lp_arena,
                                 expr_arena,
@@ -665,7 +665,7 @@ impl PredicatePushDown<'_> {
                     }
                 }
 
-                Ok(PythonScan { options })
+                Ok(PythonScan { options, sub_plans })
             },
             #[cfg(feature = "merge_sorted")]
             lp @ MergeSorted { .. } => {

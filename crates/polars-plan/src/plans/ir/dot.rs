@@ -124,7 +124,7 @@ impl<'a> IRDotDisplay<'a> {
                 write_label(f, id, |f| write!(f, "FILTER BY {pred}"))?;
             },
             #[cfg(feature = "python")]
-            PythonScan { options } => {
+            PythonScan { options, .. } => {
                 let predicate = match &options.predicate {
                     PythonPredicate::Polars(e) => format!("{}", self.display_expr(e)),
                     PythonPredicate::PyArrow(s) => s.clone(),

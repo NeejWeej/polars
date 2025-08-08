@@ -201,6 +201,7 @@ impl SlicePushDown {
             #[cfg(feature = "python")]
             (PythonScan {
                 mut options,
+                sub_plans,
             },
             // TODO! we currently skip slice pushdown if there is a predicate.
             // we can modify the readers to only limit after predicates have been applied
@@ -208,6 +209,7 @@ impl SlicePushDown {
                 options.n_rows = Some(state.len as usize);
                 let lp = PythonScan {
                     options,
+                    sub_plans,
                 };
                 Ok(lp)
             }

@@ -66,7 +66,7 @@ impl IR {
             MergeSorted { .. } => Exprs::Empty,
 
             #[cfg(feature = "python")]
-            PythonScan { options } => match &options.predicate {
+            PythonScan { options, .. } => match &options.predicate {
                 PythonPredicate::Polars(predicate) => Exprs::single(predicate),
                 _ => Exprs::Empty,
             },
@@ -138,7 +138,7 @@ impl IR {
             MergeSorted { .. } => ExprsMut::Empty,
 
             #[cfg(feature = "python")]
-            PythonScan { options } => match &mut options.predicate {
+            PythonScan { options, .. } => match &mut options.predicate {
                 PythonPredicate::Polars(predicate) => ExprsMut::single(predicate),
                 _ => ExprsMut::Empty,
             },
@@ -229,7 +229,7 @@ impl IR {
             Scan { .. } => Inputs::Empty,
             DataFrameScan { .. } => Inputs::Empty,
             #[cfg(feature = "python")]
-            PythonScan { .. } => Inputs::Empty,
+            PythonScan { sub_plans, .. } => Inputs::slice(sub_plans),
             #[cfg(feature = "merge_sorted")]
             MergeSorted {
                 input_left,
@@ -268,7 +268,7 @@ impl IR {
             Scan { .. } => InputsMut::Empty,
             DataFrameScan { .. } => InputsMut::Empty,
             #[cfg(feature = "python")]
-            PythonScan { .. } => InputsMut::Empty,
+            PythonScan { sub_plans, .. } => InputsMut::slice(sub_plans),
             #[cfg(feature = "merge_sorted")]
             MergeSorted {
                 input_left,

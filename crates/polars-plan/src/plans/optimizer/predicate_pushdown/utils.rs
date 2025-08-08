@@ -458,7 +458,7 @@ pub(crate) fn ir_removes_rows(ir: &IR) -> bool {
         MergeSorted { .. } => false,
 
         #[cfg(feature = "python")]
-        PythonScan { options } => options.n_rows.is_some(),
+        PythonScan { options, .. } => options.n_rows.is_some(),
 
         // Scan currently may evaluate the predicate on the statistics of the
         // entire files list.

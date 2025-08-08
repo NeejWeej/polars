@@ -12,8 +12,9 @@ impl LazyFrame {
         schema: Either<PyObject, SchemaRef>,
         scan_fn: PyObject,
         pyarrow: bool,
-        // Validate that the source gives the proper schema
         validate_schema: bool,
+        inner_lfs: Option<Vec<LazyFrame>>,
+        custom_explain_name: Option<String>,
     ) -> Self {
         DslPlan::PythonScan {
             options: PythonOptionsDsl {
@@ -26,6 +27,10 @@ impl LazyFrame {
                     PythonScanSource::IOPlugin
                 },
                 validate_schema,
+                inner_plans: inner_lfs
+                    .map(|v| v.into_iter().map(|lf| lf.dsl).collect())
+                    .map(SpecialEq::new),
+                custom_explain_name,
             },
         }
         .into()
