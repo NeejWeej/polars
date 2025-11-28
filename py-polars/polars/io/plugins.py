@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 
 @unstable()
 def register_io_source(
-    io_source: Callable[
-        [list[str] | None, Expr | None, int | None, int | None], Iterator[DataFrame]
-    ],
+    io_source: object,
     *,
     schema: Callable[[], SchemaDict] | SchemaDict,
     validate_schema: bool = False,
@@ -91,8 +89,21 @@ def register_io_source(
             with_columns, parsed_predicate, n_rows, batch_size
         ), parsed_predicate_success
 
+    inner_lfs = None
+    if hasattr(io_source, "get_inner_lfs"):
+        inner_lfs = io_source.get_inner_lfs()
+
+    custom_explain_name = None
+    if hasattr(io_source, "explain"):
+        custom_explain_name = io_source.explain()
+
     return pl.LazyFrame._scan_python_function(
-        schema=schema, scan_fn=wrap, pyarrow=False, validate_schema=validate_schema
+        schema=schema,
+        scan_fn=wrap,
+        pyarrow=False,
+        validate_schema=validate_schema,
+        inner_lfs=inner_lfs,
+        custom_explain_name=custom_explain_name,
     )
 
 

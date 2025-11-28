@@ -14,6 +14,7 @@ pub struct PythonOptions {
     /// A function that returns a Python Generator.
     /// The generator should produce Polars DataFrame's.
     pub scan_fn: Option<PythonFunction>,
+    pub custom_explain_name: Option<PlSmallStr>,
     /// Schema of the file.
     pub schema: SchemaRef,
     /// Schema the reader will produce when the file is read.

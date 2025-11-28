@@ -112,6 +112,19 @@ pub fn to_alp_impl(lp: DslPlan, ctxt: &mut DslConversionContext) -> PolarsResult
         } => scans::dsl_to_ir(sources, unified_scan_args, scan_type, cached_ir, ctxt)?,
         #[cfg(feature = "python")]
         DslPlan::PythonScan { mut options } => {
+    let sub_plans = options
+        .inner_plans
+        .take()
+        .map(|plans| {
+            plans
+                .into_inner()
+                .into_iter()
+                .map(|lp| to_alp_impl(lp, ctxt))
+                .collect::<PolarsResult<Vec<_>>>()
+        })
+        .transpose()?
+        .unwrap_or_default();
+
             let scan_fn = options.scan_fn.take();
             let schema = options.get_schema()?;
             IR::PythonScan {
@@ -124,7 +137,9 @@ pub fn to_alp_impl(lp: DslPlan, ctxt: &mut DslConversionContext) -> PolarsResult
                     with_columns: Default::default(),
                     n_rows: Default::default(),
                     predicate: Default::default(),
+            custom_explain_name: options.custom_explain_name.map(|s| s.into()),
                 },
+        sub_plans,
             }
         },
         DslPlan::Union { inputs, args } => {

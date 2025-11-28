@@ -8,9 +8,10 @@ use pyo3::prelude::*;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+use crate::dsl::DslPlan;
 use crate::dsl::SpecialEq;
 
-#[derive(Clone, PartialEq, Eq, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[cfg_attr(feature = "dsl-schema", derive(schemars::JsonSchema))]
 pub struct PythonOptionsDsl {
@@ -21,7 +22,22 @@ pub struct PythonOptionsDsl {
     pub schema_fn: Option<SpecialEq<Arc<Either<PythonFunction, SchemaRef>>>>,
     pub python_source: PythonScanSource,
     pub validate_schema: bool,
+    #[cfg_attr(any(feature = "serde", feature = "dsl-schema"), serde(skip))]
+    pub inner_plans: Option<Vec<DslPlan>>,
+    pub custom_explain_name: Option<String>,
 }
+
+impl PartialEq for PythonOptionsDsl {
+    fn eq(&self, other: &Self) -> bool {
+        self.scan_fn == other.scan_fn
+            && self.schema_fn == other.schema_fn
+            && self.python_source == other.python_source
+            && self.validate_schema == other.validate_schema
+            && self.custom_explain_name == other.custom_explain_name
+    }
+}
+
+impl Eq for PythonOptionsDsl {}
 
 impl PythonOptionsDsl {
     pub fn get_schema(&self) -> PolarsResult<SchemaRef> {
